@@ -1,0 +1,2 @@
+# MapGenerator
+CHaserの対戦マップを自動で生成する機能の開発
