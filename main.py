@@ -2,10 +2,13 @@ import argparse
 import random
 
 import numpy as np
+import numpy.typing as npt
 
 
 # 与えられたマップを90°回転させるメソッド
-def rotate_map(small_map):
+def rotate_map(
+    small_map: npt.NDArray[npt.NDArray[int]],
+) -> npt.NDArray[npt.NDArray[int]]:
     # 転置行列を求めるプログラム
     h = len(small_map)
     w = len(small_map[0])
@@ -19,7 +22,9 @@ def rotate_map(small_map):
 
 
 # 与えられたマップの上下を反転させるメソッド
-def invers_map(small_map):
+def invers_map(
+    small_map: npt.NDArray[npt.NDArray[int]],
+) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
     w = len(small_map[0])
     invers_map = np.zeros((h, w))
@@ -32,7 +37,9 @@ def invers_map(small_map):
 # ↓マップを結合する順番
 # 0 3
 # 1 2
-def joint_1517map(small_map0, gap_map0):
+def joint_1517map(
+    small_map0: npt.NDArray[npt.NDArray[int]], gap_map0: npt.NDArray[npt.NDArray[int]]
+) -> npt.NDArray[npt.NDArray[int]]:
     s_h = len(small_map0)
     s_w = len(small_map0[0])
     h = 17
@@ -77,7 +84,9 @@ def joint_1517map(small_map0, gap_map0):
 
 
 # ランダムに壁とアイテムを配置するメソッド
-def random_map(small_map, block, item):
+def random_map(
+    small_map: npt.NDArray[npt.NDArray[int]], block: list[int], item: list[int]
+) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
     w = len(small_map[0])
     block_num = random.randint(block[0], block[1])
@@ -109,7 +118,9 @@ def random_map(small_map, block, item):
     return rs_map
 
 
-def setAgent(map):
+def setAgent(
+    entire_map: npt.NDArray[npt.NDArray[int]],
+) -> tuple[npt.NDArray[npt.NDArray[int]], npt.NDArray[npt.NDArray[int]]]:
     agent_position = np.zeros((2, 2))
     # Cool
     agent_position[0][0] = random.randint(0, 6)  # x
@@ -119,20 +130,22 @@ def setAgent(map):
     agent_position[1][1] = 16 - agent_position[0][1]  # y
     agent_position = agent_position.astype(int)
     if agent_position[0][1] < 7:
-        map[agent_position[0][1]][agent_position[0][0]] = 0
-        map[agent_position[1][1]][agent_position[1][0]] = 0
-        map[agent_position[0][1] + 9][agent_position[0][0]] = 0
-        map[agent_position[1][1] - 9][agent_position[1][0]] = 0
+        entire_map[agent_position[0][1]][agent_position[0][0]] = 0
+        entire_map[agent_position[1][1]][agent_position[1][0]] = 0
+        entire_map[agent_position[0][1] + 9][agent_position[0][0]] = 0
+        entire_map[agent_position[1][1] - 9][agent_position[1][0]] = 0
     elif agent_position[0][1] > 9:
-        map[agent_position[0][1]][agent_position[0][0]] = 0
-        map[agent_position[1][1]][agent_position[1][0]] = 0
-        map[agent_position[0][1] - 9][agent_position[0][0]] = 0
-        map[agent_position[1][1] + 9][agent_position[1][0]] = 0
-    return map, agent_position
+        entire_map[agent_position[0][1]][agent_position[0][0]] = 0
+        entire_map[agent_position[1][1]][agent_position[1][0]] = 0
+        entire_map[agent_position[0][1] - 9][agent_position[0][0]] = 0
+        entire_map[agent_position[1][1] + 9][agent_position[1][0]] = 0
+    return entire_map, agent_position
 
 
 # マップを作るメソッド
-def make_map(block_max, item_max):
+def make_map(
+    block_max: int, item_max: int
+) -> tuple[npt.NDArray[npt.NDArray[int]], npt.NDArray[npt.NDArray[int]]]:
     # 元となる小さいマップを作りそれを回転させて結合することでランダムマップを実現する
     # 隙間が開くためそれを埋める, 隙間マップも作成する
 
@@ -166,21 +179,27 @@ def make_map(block_max, item_max):
 
 
 # マップファイル出力
-def output_map(file_path, file_num, map, time, agent_position):
-    with open(f"{file_path}{file_num}.map", "w") as f:
-        f.write(f"N:generated{file_num}\n")
+def output_map(
+    file_path: str,
+    file_name: str,
+    entire_map: npt.NDArray[npt.NDArray[int]],
+    time: int,
+    agent_position: npt.NDArray[npt.NDArray[int]],
+) -> None:
+    with open(f"{file_path}{file_name}.map", "w") as f:
+        f.write(f"N:generated{file_name}\n")
         f.write(f"T:{time}\n")
         f.write("S:15,17\n")
         for i in range(17):
-            f.write(f"D:{map[i][0]}")
+            f.write(f"D:{entire_map[i][0]}")
             for j in range(14):
-                f.write(f",{map[i][j+1]}")
+                f.write(f",{entire_map[i][j+1]}")
             f.write("\n")
         f.write(f"C:{agent_position[0][0]},{agent_position[0][1]}\n")
         f.write(f"H:{agent_position[1][0]},{agent_position[1][1]}\n")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("generateNum", help="")
     parser.add_argument("-b", "--blockNum", help="")
