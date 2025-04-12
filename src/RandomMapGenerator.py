@@ -23,7 +23,7 @@ def rotateMap(
 
 
 # 与えられたマップの上下を反転させるメソッド
-def inversMap(
+def reverseMap(
     small_map: npt.NDArray[npt.NDArray[int]],
 ) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
@@ -89,7 +89,7 @@ def jointMap(
 
 
 # ランダムに壁とアイテムを配置するメソッド
-def randomMap(
+def layoutRandomMap(
     small_map: npt.NDArray[npt.NDArray[int]], block: list[int], item: list[int]
 ) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
@@ -177,10 +177,10 @@ def makeMap(
 
     # 小マップの生成
     small_map = np.zeros((small_h, small_w))
-    small_map = randomMap(small_map, small_block, small_item)
+    small_map = layoutRandomMap(small_map, small_block, small_item)
     # 隙間マップの生成
     gap_map = np.zeros((gap_h, gap_w))
-    gap_map = randomMap(gap_map, gap_block, gap_item)
+    gap_map = layoutRandomMap(gap_map, gap_block, gap_item)
     gap_map[0][7] = 3
 
     # マップを結合して完成させる
@@ -249,7 +249,7 @@ def main() -> None:
 
     for i in range(generate_num):
         entire_map, agent_position = makeMap(block_num, item_num)
-        outputMap("./generated_map/", f"RandMap_{i}", entire_map, 120, agent_position)
+        outputMap(os.path.join(os.getcwd(), "generated_map"), f"RandMap_{i}", entire_map, 120, agent_position)
 
 
 if __name__ == "__main__":
