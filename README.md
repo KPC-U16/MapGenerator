@@ -25,6 +25,6 @@ poetry run python main.py {生成マップ数} -b {マップ中のブロック�
 
 例 :  
 ```bash
-poetry run python main.py 15 -b 9 -i
+poetry run python main.py 15 -b 9 -i 10
 ```
 
