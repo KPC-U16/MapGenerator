@@ -1,34 +1,34 @@
 import argparse
-import random
 import os
+import random
 
 import numpy as np
 import numpy.typing as npt
 
 
 # 与えられたマップを90°回転させるメソッド
-def rotate_map(
+def rotateMap(
     small_map: npt.NDArray[npt.NDArray[int]],
 ) -> npt.NDArray[npt.NDArray[int]]:
     # 転置行列を求めるプログラム
     h = len(small_map)
     w = len(small_map[0])
-    trans_map = np.zeros((w, h), dtype='int64')
+    trans_map = np.zeros((w, h), dtype="int64")
     for i in range(h):
         for j in range(w):
             trans_map[j][i] = small_map[i][j]
     # 最後に上下をひっくり返す
-    rotate_map = invers_map(trans_map)
+    rotate_map = inversMap(trans_map)
     return rotate_map
 
 
 # 与えられたマップの上下を反転させるメソッド
-def invers_map(
+def inversMap(
     small_map: npt.NDArray[npt.NDArray[int]],
 ) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
     w = len(small_map[0])
-    invers_map = np.zeros((h, w), dtype='int64')
+    invers_map = np.zeros((h, w), dtype="int64")
     for i in range(h):
         invers_map[h - 1 - i] = small_map[i]
     return invers_map
@@ -38,22 +38,22 @@ def invers_map(
 # ↓マップを結合する順番
 # 0 3
 # 1 2
-def joint_1517map(
+def jointMap(
     small_map0: npt.NDArray[npt.NDArray[int]], gap_map0: npt.NDArray[npt.NDArray[int]]
 ) -> npt.NDArray[npt.NDArray[int]]:
     s_h = len(small_map0)
     s_w = len(small_map0[0])
     h = 17
     w = 15
-    small_map1 = rotate_map(small_map0)
-    small_map2 = rotate_map(small_map1)
-    small_map3 = rotate_map(small_map2)
-    gap_map1 = rotate_map(rotate_map(gap_map0))
+    small_map1 = rotateMap(small_map0)
+    small_map2 = rotateMap(small_map1)
+    small_map3 = rotateMap(small_map2)
+    gap_map1 = rotateMap(rotateMap(gap_map0))
     big_map = np.zeros((h, w))
 
-# 2次元配列のインデックスによって, 結合するリストを変更するプログラム
-# 結合する場所については, このメソッド定義場所のコメントを参照
-# 上側, 下側, 真ん中(3行)のそれぞれに別れている
+    # 2次元配列のインデックスによって, 結合するリストを変更するプログラム
+    # 結合する場所については, このメソッド定義場所のコメントを参照
+    # 上側, 下側, 真ん中(3行)のそれぞれに別れている
 
     for i in range(h):
         for j in range(w):
@@ -89,7 +89,7 @@ def joint_1517map(
 
 
 # ランダムに壁とアイテムを配置するメソッド
-def random_map(
+def randomMap(
     small_map: npt.NDArray[npt.NDArray[int]], block: list[int], item: list[int]
 ) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
@@ -155,7 +155,7 @@ def setAgent(
 
 
 # マップを作るメソッド
-def make_map(
+def makeMap(
     block_max: int, item_max: int
 ) -> tuple[npt.NDArray[npt.NDArray[int]], npt.NDArray[npt.NDArray[int]]]:
     # 元となる小さいマップを作りそれを回転させて結合することでランダムマップを実現する
@@ -177,21 +177,21 @@ def make_map(
 
     # 小マップの生成
     small_map = np.zeros((small_h, small_w))
-    small_map = random_map(small_map, small_block, small_item)
+    small_map = randomMap(small_map, small_block, small_item)
     # 隙間マップの生成
     gap_map = np.zeros((gap_h, gap_w))
-    gap_map = random_map(gap_map, gap_block, gap_item)
+    gap_map = randomMap(gap_map, gap_block, gap_item)
     gap_map[0][7] = 3
 
     # マップを結合して完成させる
-    entire_map = joint_1517map(small_map, gap_map)
+    entire_map = jointMap(small_map, gap_map)
     entire_map, agent_position = setAgent(entire_map)
     entire_map = entire_map.astype(int)
     return entire_map, agent_position
 
 
 # マップファイル出力
-def output_map(
+def outputMap(
     file_path: str,
     file_name: str,
     entire_map: npt.NDArray[npt.NDArray[int]],
@@ -223,24 +223,33 @@ def main() -> None:
     try:
         generate_num = int(args.generateNum)
     except ValueError:
-        print(f"error: Expected an integer for 'generateNum', but received a different type.")
+        print(
+            "error: Expected an integer for 'generateNum', "
+            "but received a different type."
+        )
         print(f"generateNum type: {type(args.generateNum)}")
 
     try:
         block_num = int(args.blockNum) if args.blockNum else 9
     except ValueError:
-        print(f"error: Expected an integer for option '--blockNum', but received a different type.")
+        print(
+            "error: Expected an integer for option '--blockNum', "
+            "but received a different type."
+        )
         print(f"blockNum type: {type(args.blockNum)}")
 
     try:
         item_num = int(args.itemNum) if args.itemNum else 10
     except ValueError:
-        print(f"error: Expected an integer for option '--itemNum', but received a different type.")
+        print(
+            "error: Expected an integer for option '--itemNum', "
+            "but received a different type."
+        )
         print(f"itemNum type: {type(args.generateNum)}")
 
     for i in range(generate_num):
-        entire_map, agent_position = make_map(block_num, item_num)
-        output_map("./generated_map/", f"RandMap_{i}", entire_map, 120, agent_position)
+        entire_map, agent_position = makeMap(block_num, item_num)
+        outputMap("./generated_map/", f"RandMap_{i}", entire_map, 120, agent_position)
 
 
 if __name__ == "__main__":
