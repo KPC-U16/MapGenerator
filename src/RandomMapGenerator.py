@@ -106,7 +106,7 @@ def random_map(
     while True:
         item_position_x = random.randint(0, w - 1)
         item_position_y = random.randint(0, h - 1)
-        if rs_map[item_position_y][item_posirion_x] == 0:
+        if rs_map[item_position_y][item_position_x] == 0:
             rs_map[item_position_y][item_position_x] = 3
             item_counter += 1
         if item_counter >= item_num:

@@ -15,3 +15,7 @@ logs/
 
 # OS依存ファイル
 .DS_Store
+
+# プログラムで自動生成されるファイル
+src/generated_map/
+*.map
