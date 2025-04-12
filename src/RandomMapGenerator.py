@@ -18,7 +18,7 @@ def rotateMap(
         for j in range(w):
             trans_map[j][i] = small_map[i][j]
     # 最後に上下をひっくり返す
-    rotate_map = inversMap(trans_map)
+    rotate_map = reverseMap(trans_map)
     return rotate_map
 
 
@@ -28,10 +28,10 @@ def reverseMap(
 ) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
     w = len(small_map[0])
-    invers_map = np.zeros((h, w), dtype="int64")
+    reverse_map = np.zeros((h, w), dtype="int64")
     for i in range(h):
-        invers_map[h - 1 - i] = small_map[i]
-    return invers_map
+        reverse_map[h - 1 - i] = small_map[i]
+    return reverse_map
 
 
 # 与えられたマップを結合して大きいマップを作るメソッド
@@ -249,7 +249,13 @@ def main() -> None:
 
     for i in range(generate_num):
         entire_map, agent_position = makeMap(block_num, item_num)
-        outputMap(os.path.join(os.getcwd(), "generated_map"), f"RandMap_{i}", entire_map, 120, agent_position)
+        outputMap(
+            os.path.join(os.getcwd(), "generated_map"),
+            f"RandMap_{i}",
+            entire_map,
+            120,
+            agent_position,
+        )
 
 
 if __name__ == "__main__":
