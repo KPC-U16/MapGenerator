@@ -1,5 +1,6 @@
 import argparse
 import random
+import os
 
 import numpy as np
 import numpy.typing as npt
@@ -12,7 +13,7 @@ def rotate_map(
     # 転置行列を求めるプログラム
     h = len(small_map)
     w = len(small_map[0])
-    trans_map = np.zeros((w, h))
+    trans_map = np.zeros((w, h), dtype='int64')
     for i in range(h):
         for j in range(w):
             trans_map[j][i] = small_map[i][j]
@@ -27,7 +28,7 @@ def invers_map(
 ) -> npt.NDArray[npt.NDArray[int]]:
     h = len(small_map)
     w = len(small_map[0])
-    invers_map = np.zeros((h, w))
+    invers_map = np.zeros((h, w), dtype='int64')
     for i in range(h):
         invers_map[h - 1 - i] = small_map[i]
     return invers_map
@@ -50,6 +51,10 @@ def joint_1517map(
     gap_map1 = rotate_map(rotate_map(gap_map0))
     big_map = np.zeros((h, w))
 
+# 2次元配列のインデックスによって, 結合するリストを変更するプログラム
+# 結合する場所については, このメソッド定義場所のコメントを参照
+# 上側, 下側, 真ん中(3行)のそれぞれに別れている
+
     for i in range(h):
         for j in range(w):
             if i < s_w:  # upper
@@ -62,19 +67,19 @@ def joint_1517map(
                     big_map[i][j] = small_map1[i - (h - s_w)][j]
                 else:  # area 2
                     big_map[i][j] = small_map2[i - (h - s_h)][j - s_h]
-            elif i == 7:  # area 0, 2 and gap
+            elif i == 7:  # area 2 and gap
                 if j < s_w:
                     big_map[i][j] = small_map0[i][j]
                 else:
                     big_map[i][j] = gap_map1[0][j - s_w]
-            elif i == 8:
+            elif i == 8:  # area gap and center
                 if j < s_w:
                     big_map[i][j] = gap_map0[0][j]
                 elif j > w - s_h:
                     big_map[i][j] = gap_map1[1][j - (s_h - 1)]
                 else:
                     big_map[i][j] = 3
-            elif i == 9:
+            elif i == 9:  # area 2 and gap
                 if j > w - s_h:
                     big_map[i][j] = small_map2[i - (h - s_h)][j - s_h]
                 else:
@@ -94,25 +99,32 @@ def random_map(
     rs_map = np.zeros((h, w))
 
     # アイテムの配置
-    counter = 0
+    # アイテムの位置をランダムに決定し, 配置する
+    # もし, ランダムに選んだ地点に既に何かしらがある場合は処理を飛ばす
+    # 規定の数のアイテムを設置するまでループする
+    item_counter = 0
     while True:
-        x = random.randint(0, w - 1)
-        y = random.randint(0, h - 1)
-        if rs_map[y][x] == 0:
-            rs_map[y][x] = 3
-            counter += 1
-        if counter >= item_num:
+        item_position_x = random.randint(0, w - 1)
+        item_position_y = random.randint(0, h - 1)
+        if rs_map[item_position_y][item_posirion_x] == 0:
+            rs_map[item_position_y][item_position_x] = 3
+            item_counter += 1
+        if item_counter >= item_num:
             break
 
     # ブロックの配置
-    counter = 0
+    # ブロックの位置をランダムに決定し, 配置する
+    # もし, ランダムに選んだ地点に既に何かしらがある場合は処理を飛ばす
+    # 規定の数のブロック設置するまでループする
+    # ルール上, 最外周にはブロックを設置できないため, ランダムで0が選択されないようにする
+    block_counter = 0
     while True:
-        x = random.randint(0, w - 1)
-        y = random.randint(0, h - 1)
-        if rs_map[y][x] == 0 and x != 0 and y != 0:
-            rs_map[y][x] = 2
-            counter += 1
-        if counter >= block_num:
+        block_position_x = random.randint(1, w - 1)
+        block_position_y = random.randint(1, h - 1)
+        if rs_map[block_position_y][block_position_x] == 0:
+            rs_map[block_position_y][block_position_x] = 2
+            block_counter += 1
+        if block_counter >= block_num:
             break
 
     return rs_map
@@ -186,6 +198,8 @@ def output_map(
     time: int,
     agent_position: npt.NDArray[npt.NDArray[int]],
 ) -> None:
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)
     with open(f"{file_path}{file_name}.map", "w") as f:
         f.write(f"N:generated{file_name}\n")
         f.write(f"T:{time}\n")
@@ -208,17 +222,21 @@ def main() -> None:
 
     try:
         generate_num = int(args.generateNum)
-    except Exception as e:
-        print(f"エラーが発生しました : {e}")
+    except ValueError:
+        print(f"error: Expected an integer for 'generateNum', but received a different type.")
+        print(f"generateNum type: {type(args.generateNum)}")
 
-    if args.blockNum is None:
-        block_num = 9
-    else:
-        block_num = args.blockNum
-    if args.itemNum is None:
-        item_num = 10
-    else:
-        item_num = args.itemNum
+    try:
+        block_num = int(args.blockNum) if args.blockNum else 9
+    except ValueError:
+        print(f"error: Expected an integer for option '--blockNum', but received a different type.")
+        print(f"blockNum type: {type(args.blockNum)}")
+
+    try:
+        item_num = int(args.itemNum) if args.itemNum else 10
+    except ValueError:
+        print(f"error: Expected an integer for option '--itemNum', but received a different type.")
+        print(f"itemNum type: {type(args.generateNum)}")
 
     for i in range(generate_num):
         entire_map, agent_position = make_map(block_num, item_num)
