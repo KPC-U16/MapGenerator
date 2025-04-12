@@ -35,3 +35,4 @@ profile = "black"
 [tool.mypy]
 python_version = 3.9
 strict = true
+exclude = ['.venv', '__pycache__', '.git', '.mypy_cache', 'tests']

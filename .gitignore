@@ -18,4 +18,5 @@ logs/
 
 # プログラムで自動生成されるファイル
 src/generated_map/
+src/__pycache__/
 *.map
