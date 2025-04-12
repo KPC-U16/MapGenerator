@@ -6,6 +6,11 @@ python 3.12.2
 poetry 2.1.1  
 
 # 開発方法
+一番最初に以下のコマンドを実行する.  
+```bash
+poetry install
+```
+
 コードを書いた場合, fmtとlintを適宜実行する.  
 実行のためにMakefileが用意されている.  
 実行例:  
@@ -18,13 +23,5 @@ make check
 ```
 
 ## 実行方法
-このプログラムを実行するには以下のコマンドを実行してください.
-```bash
-poetry run python main.py {生成マップ数} -b {マップ中のブロックの数} -i {マップ中のアイテムの数}
-```
-
-例 :  
-```bash
-poetry run python main.py 15 -b 9 -i 10
-```
-
+各プログラムのドキュメントに記載しています.  
+[RandomMapGenerator](docs/RandomMapGenerator.md)
