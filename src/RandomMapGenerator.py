@@ -169,11 +169,11 @@ def makeMap(
     gap_h = 2
 
     # 小マップのブロック, アイテムの数
-    small_block = [5, 8]
-    small_item = [6, 10]
+    small_block = [block_max - 3, block_max]
+    small_item = [item_max - 3, item_max]
     # 隙間マップのブロック, アイテムの数
     gap_block = [0, 3]
-    gap_item = [0, 4]
+    gap_item = [0, 3]
 
     # 小マップの生成
     small_map = np.zeros((small_h, small_w))
@@ -200,7 +200,7 @@ def outputMap(
 ) -> None:
     if not os.path.exists(file_path):
         os.makedirs(file_path)
-    with open(f"{file_path}{file_name}.map", "w") as f:
+    with open(f"{file_path}/{file_name}.map", "w") as f:
         f.write(f"N:generated{file_name}\n")
         f.write(f"T:{time}\n")
         f.write("S:15,17\n")
