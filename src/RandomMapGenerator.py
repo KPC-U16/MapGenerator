@@ -200,7 +200,7 @@ def outputMap(
 ) -> None:
     if not os.path.exists(file_path):
         os.makedirs(file_path)
-    with open(f"{file_path}/{file_name}.map", "w") as f:
+    with open(os.path.join(file_path, f"{file_name}.map"), "w") as f:
         f.write(f"N:generated{file_name}\n")
         f.write(f"T:{time}\n")
         f.write("S:15,17\n")
@@ -213,7 +213,7 @@ def outputMap(
         f.write(f"H:{agent_position[1][0]},{agent_position[1][1]}\n")
 
 
-def main() -> None:
+def setArgument() -> tuple[int, int, int]:
     parser = argparse.ArgumentParser()
     parser.add_argument("generateNum", help="")
     parser.add_argument("-b", "--blockNum", help="")
@@ -231,21 +231,36 @@ def main() -> None:
 
     try:
         block_num = int(args.blockNum) if args.blockNum else 9
-    except ValueError:
-        print(
-            "error: Expected an integer for option '--blockNum', "
-            "but received a different type."
-        )
-        print(f"blockNum type: {type(args.blockNum)}")
+        if not (0 <= block_num <= 40):
+            raise ValueError("Out of range")
+    except ValueError as e:
+        if str(e) == "Out of range":
+            print("error: '--blockNum' must be between 0 and 40.")
+        else:
+            print(
+                "error: Expected an integer for option '--blockNum', "
+                "but received a different type."
+            )
+            print(f"blockNum type: {type(args.blockNum)}")
 
     try:
         item_num = int(args.itemNum) if args.itemNum else 10
-    except ValueError:
-        print(
-            "error: Expected an integer for option '--itemNum', "
-            "but received a different type."
-        )
-        print(f"itemNum type: {type(args.generateNum)}")
+        if not (0 < item_num <= 40):
+            raise ValueError("Out of range")
+    except ValueError as e:
+        if str(e) == "Out of range":
+            print("error: '--itemNum' must be between 1 and 40.")
+        else:
+            print(
+                "error: Expected an integer for option '--itemNum', "
+                "but received a different type."
+            )
+            print(f"itemNum type: {type(args.generateNum)}")
+    return generate_num, int(block_num / 4), int(item_num / 4)
+
+
+def main() -> None:
+    generate_num, block_num, item_num = setArgument()
 
     for i in range(generate_num):
         entire_map, agent_position = makeMap(block_num, item_num)
