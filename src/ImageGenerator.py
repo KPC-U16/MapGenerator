@@ -1,13 +1,12 @@
 import os
 import re
 import sys
-from typing import List
 
 from PIL import Image
 
 
 # mapファイルのテキストデータを2次元配列に変換するメソッド
-def changEArray(map_data: List[str]) -> List[List[str]]:
+def changeList(map_data: list[str]) -> list[list[str]]:
     map_list = []
     # 各行を一マスごとに分割して配列に格納
     for i in range(len(map_data)):
@@ -25,14 +24,14 @@ def changEArray(map_data: List[str]) -> List[List[str]]:
 
 
 # 一つのmapファイルをpngに変換するメソッド
-def draWPng(file_name: str) -> None:
+def drawMapImage(file_name: str) -> None:
     # mapファイルを開いてmap_dataにテキストを格納
     # print(file_name)
     file = open("../" + file_name, "r")
     map_data = file.read().split("\n")
     file.close
 
-    map_list = changEArray(map_data)
+    map_list = changeList(map_data)
 
     # アイコン用の画像を開く
     yuka = Image.open("../../icons/yuka.png")
@@ -72,7 +71,7 @@ def draWPng(file_name: str) -> None:
 
 
 # 全てのmapファイルをpngに変換するメソッド
-def draWAll() -> None:
+def main() -> None:
 
     dir_name = sys.argv[1]
     file_list = os.listdir(dir_name)
@@ -85,11 +84,12 @@ def draWAll() -> None:
     os.chdir("map_images")
 
     for i in range(len(file_list)):
-        draWPng(file_list[i])
+        drawMapImage(file_list[i])
 
     # もとのディレクトリに戻る
     os.chdir("../../")
     print("完了しました")
 
 
-draWAll()
+if __name__ == "__main__":
+    main()
