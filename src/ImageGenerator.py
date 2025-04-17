@@ -10,11 +10,13 @@ def changeList(map_data: list[str]) -> list[list[str]]:
     map_list = []
     # 各行を一マスごとに分割して配列に格納
     for i in range(len(map_data)):
-        if map_data[i] != "" and map_data[i][0] == "D":
+        if map_data[i] == "":
+            break
+        elif map_data[i][0] == "D":
             map_list.append(re.split(",|\n", map_data[i].replace("D:", "")))
-        elif map_data[i] != "" and map_data[i][0] == "H":
+        elif map_data[i][0] == "H":
             hot = re.split(",|\n", map_data[i].replace("H:", ""))
-        elif map_data[i] != "" and map_data[i][0] == "C":
+        elif map_data[i][0] == "C":
             cool = re.split(",|\n", map_data[i].replace("C:", ""))
 
     map_list[int(cool[1])][int(cool[0])] = "C"
@@ -25,11 +27,9 @@ def changeList(map_data: list[str]) -> list[list[str]]:
 
 # 一つのmapファイルをpngに変換するメソッド
 def drawMapImage(file_name: str) -> None:
-    # mapファイルを開いてmap_dataにテキストを格納
-    # print(file_name)
-    file = open("../" + file_name, "r")
-    map_data = file.read().split("\n")
-    file.close
+    # mapファイルを開いてmap_dataにテキストを格納、行ごとに配列にする
+    with open("../" + file_name, "r") as file:
+        map_data = file.readlines()
 
     map_list = changeList(map_data)
 
@@ -88,7 +88,6 @@ def main() -> None:
 
     # もとのディレクトリに戻る
     os.chdir("../../")
-    print("完了しました")
 
 
 if __name__ == "__main__":
