@@ -26,19 +26,22 @@ def changeList(map_data: list[str]) -> list[list[str]]:
 
 
 # 一つのmapファイルをpngに変換するメソッド
-def drawMapImage(file_name: str) -> None:
+def drawMapImage(
+    file_name: str,
+    dir_path: str,
+) -> None:
     # mapファイルを開いてmap_dataにテキストを格納、行ごとに配列にする
-    with open("../" + file_name, "r") as file:
+    with open(dir_path + file_name, "r") as file:
         map_data = file.readlines()
 
     map_list = changeList(map_data)
 
     # アイコン用の画像を開く
-    yuka = Image.open("../../icons/yuka.png")
-    kabe = Image.open("../../icons/kabe.png")
-    item = Image.open("../../icons/item.png")
-    hot = Image.open("../../icons/hot.png")
-    cool = Image.open("../../icons/cool.png")
+    yuka = Image.open("./icons/yuka.png")
+    kabe = Image.open("./icons/kabe.png")
+    item = Image.open("./icons/item.png")
+    hot = Image.open("./icons/hot.png")
+    cool = Image.open("./icons/cool.png")
 
     icon_size = yuka.width
 
@@ -66,28 +69,21 @@ def drawMapImage(file_name: str) -> None:
                 img.paste(yuka, (j * icon_size, i * icon_size))
 
     # 画像を保存
-    img.save(file_name.split(".")[0] + ".png")
+    img.save(dir_path + "/map_images/" + file_name.split(".")[0] + ".png")
     # img.show("test.png")
 
 
 # 全てのmapファイルをpngに変換するメソッド
 def main() -> None:
 
-    dir_name = sys.argv[1]
-    file_list = os.listdir(dir_name)
+    dir_path = sys.argv[1]
+    file_list = os.listdir(dir_path)
 
-    # mapファイルが入ったディレクトリに移動
-    os.chdir(dir_name)
-
-    # 画像を格納するディレクトリを作成し移動
-    os.mkdir("map_images")
-    os.chdir("map_images")
+    # 画像を格納するディレクトリを作成
+    os.mkdir(dir_path + "/map_images")
 
     for i in range(len(file_list)):
-        drawMapImage(file_list[i])
-
-    # もとのディレクトリに戻る
-    os.chdir("../../")
+        drawMapImage(file_list[i], dir_path)
 
 
 if __name__ == "__main__":
