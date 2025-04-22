@@ -37,13 +37,13 @@ def drawMapImage(
     map_list = changeList(map_data)
 
     # アイコン用の画像を開く
-    yuka = Image.open("./icons/yuka.png")
-    kabe = Image.open("./icons/kabe.png")
+    floor = Image.open("./icons/floor.png")
+    wall = Image.open("./icons/wall.png")
     item = Image.open("./icons/item.png")
     hot = Image.open("./icons/hot.png")
     cool = Image.open("./icons/cool.png")
 
-    icon_size = yuka.width
+    icon_size = floor.width
 
     # 画像の下地を描く
     size = (len(map_list[0]) * icon_size, len(map_list) * icon_size)
@@ -54,7 +54,7 @@ def drawMapImage(
         for j in range(len(map_list[i])):
             if map_list[i][j] == "2":
                 # 壁
-                img.paste(kabe, (j * icon_size, i * icon_size))
+                img.paste(wall, (j * icon_size, i * icon_size))
             elif map_list[i][j] == "3":
                 # アイテム
                 img.paste(item, (j * icon_size, i * icon_size))
@@ -66,7 +66,7 @@ def drawMapImage(
                 img.paste(hot, (j * icon_size, i * icon_size))
             else:
                 # それ以外(床)
-                img.paste(yuka, (j * icon_size, i * icon_size))
+                img.paste(floor, (j * icon_size, i * icon_size))
 
     # 画像を保存
     img.save(dir_path + "/map_images/" + file_name.split(".")[0] + ".png")
