@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from enum import Enum
 
 from PIL import Image
 
@@ -13,7 +14,8 @@ def changeList(map_data: list[str]) -> list[list[str]]:
         if map_data[i] == "":
             break
         elif map_data[i][0] == "D":
-            map_list.append(re.split(",|\n", map_data[i].replace("D:", "")))
+            map_list.append(re.split(",|D:|\n", map_data[i])[1:-1])
+            # print(map_data[i])
         elif map_data[i][0] == "H":
             hot = re.split(",|\n", map_data[i].replace("H:", ""))
         elif map_data[i][0] == "C":
@@ -30,8 +32,17 @@ def drawMapImage(
     file_name: str,
     dir_path: str,
 ) -> None:
+
+    # 各マスの状態を定義
+    class Status(Enum):
+        FLOOR = "0"
+        WALL = "2"
+        ITEM = "3"
+        HOT = "H"
+        COOL = "C"
+
     # mapファイルを開いてmap_dataにテキストを格納、行ごとに配列にする
-    with open(dir_path + file_name, "r") as file:
+    with open(dir_path + "/" + file_name, "r") as file:
         map_data = file.readlines()
 
     map_list = changeList(map_data)
@@ -52,16 +63,18 @@ def drawMapImage(
     # 各マスのデータに応じて画像を敷き詰める
     for i in range(len(map_list)):
         for j in range(len(map_list[i])):
-            if map_list[i][j] == "2":
+            if Status(map_list[i][j]) == Status.FLOOR:
+                img.paste(floor, (j * icon_size, i * icon_size))
+            elif Status(map_list[i][j]) == Status.WALL:
                 # 壁
                 img.paste(wall, (j * icon_size, i * icon_size))
-            elif map_list[i][j] == "3":
+            elif Status(map_list[i][j]) == Status.ITEM:
                 # アイテム
                 img.paste(item, (j * icon_size, i * icon_size))
-            elif map_list[i][j] == "C":
+            elif Status(map_list[i][j]) == Status.COOL:
                 # cool
                 img.paste(cool, (j * icon_size, i * icon_size))
-            elif map_list[i][j] == "H":
+            elif Status(map_list[i][j]) == Status.HOT:
                 # hot
                 img.paste(hot, (j * icon_size, i * icon_size))
             else:
